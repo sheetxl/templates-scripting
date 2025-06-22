@@ -2,7 +2,7 @@
  * Add a movable image and move it to the top left.
  *
  * @summary Create Image
- *
+ *  
  * @remarks
  * * Demonstrates how to add an image to the current sheet and move it to the top left.
  * * Provides an example on how to move the image to a specific location.

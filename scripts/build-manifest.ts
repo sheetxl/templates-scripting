@@ -2,7 +2,6 @@ import fs from "fs/promises";
 import path from "path";
 
 interface TemplateMetadata {
-  title: string;
   summary: string;
   icon: "formula" | "macro" | "autostart";
 }
@@ -25,32 +24,24 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
   const summaryMatch = jsdocContent.match(/@summary\s+(.+)/);
   const summary = summaryMatch?.[1]?.trim() || "No description available";
   
-  // Extract title from @summary or function name
-  let title = summary;
+  // Extract @icon
+  const iconMatch = jsdocContent.match(/@icon\s+(formula|macro|autostart)/);
+  let icon: "formula" | "macro" | "autostart" = "formula"; // default
   
-  // Try to extract function name as fallback
-  const functionMatch = content.match(/export\s+(?:default\s+)?function\s+(\w+)/);
-  const exportMatch = content.match(/export\s+(?:const|function)\s+(\w+)/);
-  
-  if (!summaryMatch && (functionMatch || exportMatch)) {
-    title = (functionMatch?.[1] || exportMatch?.[1] || "Unknown").replace(/([A-Z])/g, " $1").trim();
-    title = title.charAt(0).toUpperCase() + title.slice(1);
-  }
-  
-  // Determine icon based on content patterns
-  let icon: "formula" | "macro" | "autostart" = "formula";
-  
-  // Check for autostart (default export)
-  if (content.includes("export default")) {
-    icon = "autostart";
-  }
-  // Check for macro patterns (sheet manipulation, styling)
-  else if (content.includes("sheet.") || content.includes("range.") || content.includes("Style") || content.includes("Color") || content.includes("Border")) {
-    icon = "macro";
+  if (iconMatch) {
+    icon = iconMatch[1] as "formula" | "macro" | "autostart";
+  } else {
+    // Fallback to auto-detection if @icon not specified
+    if (content.includes("export default")) {
+      icon = "autostart";
+    } else if (content.includes("SheetXL.")) {
+      icon = "macro";
+    } else {
+      icon = "formula"; // default if no other patterns match
+    }
   }
   
   return {
-    title,
     summary,
     icon
   };
@@ -59,11 +50,13 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
 async function build() {
   const templatesDir = path.resolve("templates");
   const distDir = path.resolve("dist");
+  const distTemplatesDir = path.join(distDir, "templates");
   const files = await fs.readdir(templatesDir);
   const entries: TemplateEntry[] = [];
 
-  // Ensure dist directory exists
+  // Ensure dist directories exist
   await fs.mkdir(distDir, { recursive: true });
+  await fs.mkdir(distTemplatesDir, { recursive: true });
 
   for (const file of files) {
     if (!file.endsWith(".ts")) continue;
@@ -76,27 +69,25 @@ async function build() {
         path: file,
         metadata
       });
+
+      // Copy the .ts file to dist/templates/ for npm publishing
+      const distFilePath = path.join(distTemplatesDir, file);
+      await fs.copyFile(filePath, distFilePath);
     }
   }
+  // Sort entries by summary for consistent ordering
+  entries.sort((a, b) => a.metadata.summary.localeCompare(b.metadata.summary));
 
-  // Sort entries by title for consistent ordering
-  entries.sort((a, b) => a.metadata.title.localeCompare(b.metadata.title));
-
-  // Write directory.json to templates folder (for development/reference)
-  await fs.writeFile(
-    path.join(templatesDir, "directory.json"), 
-    JSON.stringify(entries, null, 2)
-  );
   
   // Write manifest.json to dist folder (for npm package consumption)
   await fs.writeFile(
     path.join(distDir, "manifest.json"), 
     JSON.stringify(entries, null, 2)
   );
-  
+
   console.log(`Built manifest with ${entries.length} templates`);
-  console.log(`- templates/directory.json (development reference)`);
   console.log(`- dist/manifest.json (npm package main file)`);
+  console.log(`- dist/templates/*.ts (template source files for npm)`);
 }
 
 build().catch(console.error);

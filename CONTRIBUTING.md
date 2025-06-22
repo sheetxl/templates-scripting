@@ -34,6 +34,7 @@ dist/
  * This appears in the template description.
  *
  * @summary Display Name for Template Picker
+ * @icon formula
  * @param param1 Description of first parameter
  * @param param2 Description of second parameter  
  * @returns What the function returns
@@ -47,12 +48,12 @@ export function myTemplate(param1: string, param2: number): boolean {
 ### Metadata Guidelines
 
 - **@summary**: Keep it concise (2-4 words). This becomes the template title
+- **@icon**: Specify the icon type: `formula`, `macro`, or `autostart`
+  - `formula`: Pure calculation functions (default if not specified)
+  - `macro`: Sheet/range manipulation, styling, UI operations  
+  - `autostart`: Functions with `export default` (run on workbook open)
 - **Description**: First line should be clear and descriptive
 - **Parameters**: Document all parameters with types and descriptions
-- **Icon Assignment**: Icons are auto-assigned based on code patterns:
-  - `autostart`: Functions with `export default` (run on workbook open)
-  - `macro`: Sheet/range manipulation, styling, UI operations
-  - `formula`: Pure calculation functions
 
 ### Code Standards
 

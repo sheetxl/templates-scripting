@@ -2,16 +2,13 @@
   "name": "@sheetxl/scripting-templates",
   "version": "0.1.0",
   "description": "Default scripting templates for the SheetXL script editor",
-  "main": "dist/manifest.json",
-  "files": [
-    "templates/**/*.ts",
+  "main": "dist/manifest.json",  "files": [
     "dist/**/*",
     "static/**/*"
-  ],
-  "scripts": {
+  ],"scripts": {
     "build": "ts-node scripts/build-manifest.ts",
     "prebuild": "npm run clean",
-    "clean": "node scripts/clean.js",
+    "clean": "ts-node scripts/clean.ts",
     "prepare": "npm run build"
   },
   "keywords": [

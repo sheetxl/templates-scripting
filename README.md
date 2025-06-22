@@ -1,4 +1,4 @@
-# SheetXL Scripting Templates
+# Scripting Templates
 
 ![SheetXL](./static/img/logo-color-text-135.png)
 

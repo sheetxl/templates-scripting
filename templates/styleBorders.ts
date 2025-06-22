@@ -2,7 +2,7 @@
  * Set a border style on ranges using a string shorthand.
  *
  * @summary Style Borders
- *
+ * 
  * @remarks
  * Styles can be updated using multiple inputs:
  * * shorthand strings

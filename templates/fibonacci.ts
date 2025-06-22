@@ -4,7 +4,7 @@
  * - Documentation for the function.
  *
  * @summary Generate the Fibonacci sequence.
- *
+ * 
  * @param count The number of Fibonacci numbers to generate.
  * @param startAt The starting position in the sequence.
  * @param columns If true will return columns instead of rows.

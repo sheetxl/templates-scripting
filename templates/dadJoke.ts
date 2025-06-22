@@ -1,6 +1,6 @@
 /**
  * @summary Returns Laughter. 😂
- *
+ * 
  * @remarks
  * * Uses keyword `async` and returns a Promise to perform a asynchronous operation.
  * * Illustrates the use of `fetch`.
