@@ -1,8 +1,4 @@
-# TODO
-
-- https://unpkg.com/@sheetxl/scripting-templates/dist/manifest.json
-
-## Example # Script Examples # Scripting Examples
+# TODO - Example # Script Examples # Scripting Examples
 
 - function that updates sparse data using startIncrement
 - function that updates a range (flip (like numpy)) (count words)
@@ -16,12 +12,12 @@
 - A custom function that formats with a b or an m (hmm, this should work based width, custom number format or custom renderer?)
 
 - Stock. - (rowZero has a nice example)
-- mathjs - https://simple-statistics.github.io/docs/
+- [mathjs](https://simple-statistics.github.io/docs/)
 - ESM.sh - import
 
 - copy values from one location to another (and transpose or mutate in some way)
 
-- realtime
+- realtime - Observable
 - add an insertTable with data from somewhere
 
 - on startup add event listener on startup
@@ -35,4 +31,4 @@
 - How to adding fading to update via UI
 - Add a highlight on select.
 
-- Show a prompt (Need an ScriptContext)
+- Show a prompt (Need an ScriptContext similar to FormulaContext)

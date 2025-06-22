@@ -20,6 +20,12 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
   
   const jsdocContent = jsdocMatch[1];
   
+  // Extract @hidden
+  const hiddenMatch = jsdocContent.match(/@hidden\s+(.+)/);
+  if (hiddenMatch) {
+    // If @hidden is present, skip this template
+    return null;
+  }
   // Extract @summary
   const summaryMatch = jsdocContent.match(/@summary\s+(.+)/);
   const summary = summaryMatch?.[1]?.trim() || "No description available";
