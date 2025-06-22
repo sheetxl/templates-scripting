@@ -3,10 +3,11 @@
 ![SheetXL](./static/img/logo-color-text-135.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/discord/1141404921246257223)](https://discord.gg/NTKdwUgK9p)
 
 ## Overview
 
-This repository contains the source templates that appear in the SheetXL script editor's "New Script" dropdown. Templates are automatically published to npm and consumed by the SheetXL application.
+This repository contains the source templates that appear in the SheetXL script editor's "New Script" dropdown.
 
 ## Available Templates
 
@@ -14,15 +15,15 @@ Browse the [`templates/`](./templates/) directory to see all available templates
 
 ## Additional Resource
 
-- [Built Formulas](https://github.com/sheetxl/sheetxl/tree/main/packages/formulas).
-- [Website](https://docs.sheetxl.com)
-- [Main github rep](https://docs.sheetxl.com)
-- [Discord](https://docs.sheetxl.com)
-- [SheetXL Documentation](https://docs.sheetxl.com)
+* ⭐ **[Built Formulas](https://github.com/sheetxl/sheetxl/tree/main/packages/formulas)** - All of the built-in formulas.
+* ⭐ **[Main Github](https://github.com/sheetxl)** - Our main github.
+* 💬 **[Join our Discord Community](https://discord.gg/NTKdwUgK9p)** - Get help and connect with the team.
+* 🌐 **[Website](https://www.sheetxl.com)** - The official website for SheetXL.
+* 📘 **[Developer Docs](https://www.sheetxl.com/docs)** - The official guides and tutorials.
 
 ## Usage
 
-Templates are automatically available in the SheetXL script editor. No manual installation required.
+Templates added to this repo automatically available in the SheetXL script editor. No manual installation required.
 
 ## Contributing
 
