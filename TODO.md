@@ -1,7 +1,6 @@
 # TODO
 
 - ensure builds
-- fix references
 - remove static and just reference main repo
 
 ## Example # Script Examples # Scripting Examples
