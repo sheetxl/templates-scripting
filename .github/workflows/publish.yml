@@ -83,21 +83,23 @@ jobs:
           # Check if there are template changes since last release
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Last tag: $LAST_TAG"
-          
-          # Check for force publish flag in commit message
+            # Check for force publish flag in commit message
           if [[ "${{ github.event.head_commit.message }}" == *"[publish]"* ]]; then
             echo "Force publish requested in commit message"
             echo "should_publish=true" >> $GITHUB_OUTPUT
           # Check for changes in templates since last tag
-          elif git diff --quiet $LAST_TAG HEAD -- templates/; then
-            echo "No template changes since last release"
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-          else
+          elif ! git diff --quiet $LAST_TAG HEAD -- templates/; then
             echo "Template changes detected since last release"
             echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "No template changes since last release"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
           fi
           
-          if [[ "$should_publish" == "true" ]]; then
+          # Get the should_publish value we just set
+          SHOULD_PUBLISH=$(grep "should_publish=" $GITHUB_OUTPUT | cut -d= -f2)
+          
+          if [[ "$SHOULD_PUBLISH" == "true" ]]; then
             # Auto-increment patch version
             CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
             NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
