@@ -12,11 +12,12 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
-  },  "include": [
-    "config/**/*.ts",
-    "templates/**/*.ts"
+  },
+  "include": [
+    "config"
   ],
   "exclude": [
+    "templates",
     "node_modules",
     "dist"
   ]
