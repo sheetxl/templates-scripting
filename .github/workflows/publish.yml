@@ -1,0 +1,144 @@
+name: Build and Publish Templates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/**'
+      - 'package.json'
+      - 'config/build.ts'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'templates/**'
+      - 'package.json'
+      - 'config/build.ts'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build manifest
+        run: npm run build
+
+      - name: Validate generated files
+        run: |
+          if [ ! -f "dist/manifest.json" ]; then
+            echo "Error: dist/manifest.json was not generated"
+            exit 1
+          fi
+          if [ ! -d "dist/templates" ]; then
+            echo "Error: dist/templates directory was not generated"
+            exit 1
+          fi          echo "✅ Generated files validated"
+
+      - name: Build complete
+        run: echo "✅ Build completed successfully"
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch the latest commit (including the manifest update from build job)
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build manifest
+        run: npm run build
+
+      - name: Get current version
+        id: current_version
+        run: echo "version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
+
+      - name: Check if version should be bumped
+        id: version_check
+        run: |
+          # Check if there are template changes since last release
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Last tag: $LAST_TAG"
+          
+          # Check for changes in templates since last tag
+          if git diff --quiet $LAST_TAG HEAD -- templates/; then
+            echo "No template changes since last release"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Template changes detected since last release"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+            
+            # Auto-increment patch version
+            CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
+            NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "Bumping version from $CURRENT_VERSION to $NEW_VERSION"
+          fi
+
+      - name: Update version
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: |
+          npm version ${{ steps.version_check.outputs.new_version }} --no-git-tag-version
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add package.json
+          git commit -m "Bump version to ${{ steps.version_check.outputs.new_version }} [skip ci]"
+          git push
+
+      - name: Create release tag
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: |
+          git tag "v${{ steps.version_check.outputs.new_version }}"
+          git push origin "v${{ steps.version_check.outputs.new_version }}"
+
+      - name: Publish to npm
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.version_check.outputs.should_publish == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version_check.outputs.new_version }}
+          release_name: Release v${{ steps.version_check.outputs.new_version }}
+          body: |
+            ## 🚀 New Template Release
+            
+            This release includes updated SheetXL scripting templates.
+            
+            ### 📦 Installation
+            ```bash
+            npm install @sheetxl/scripting-templates@${{ steps.version_check.outputs.new_version }}
+            ```
+            
+            ### 🔄 Changes
+            See the [commit history](https://github.com/sheetxl/scripting-templates/commits/v${{ steps.version_check.outputs.new_version }}) for details.
+          draft: false
+          prerelease: false
