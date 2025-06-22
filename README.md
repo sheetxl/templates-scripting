@@ -11,15 +11,18 @@ This repository contains the source templates that appear in the SheetXL script 
 
 ## Available Templates
 
-Browse the [`templates/`](./templates/) directory to see all available templates
+Browse the [`templates/`](./templates/) directory to see all available templates:
 
-## Additional Resource
+### 🧮 Built-in Formulas
 
-* ⭐ **[Built Formulas](https://github.com/sheetxl/sheetxl/tree/main/packages/formulas)** - All of the built-in formulas.
-* ⭐ **[Main Github](https://github.com/sheetxl)** - Our main github.
-* 💬 **[Join our Discord Community](https://discord.gg/NTKdwUgK9p)** - Get help and connect with the team.
-* 🌐 **[Website](https://www.sheetxl.com)** - The official website for SheetXL.
-* 📘 **[Developer Docs](https://www.sheetxl.com/docs)** - The official guides and tutorials.
+For additional examples and patterns, check out the **[Built-in Formulas](https://github.com/sheetxl/sheetxl/tree/main/packages/formulas)** - these follow the same TypeScript patterns as templates and showcase advanced formula implementations.
+
+## Additional Resources
+
+- ⭐ **[Main Github](https://github.com/sheetxl)** - Our main github.
+- 💬 **[Join our Discord Community](https://discord.gg/NTKdwUgK9p)** - Get help and connect with the team.
+- 🌐 **[Website](https://www.sheetxl.com)** - The official website for SheetXL.
+- 📘 **[Developer Docs](https://www.sheetxl.com/docs)** - The official guides and tutorials.
 
 ## Usage
 
