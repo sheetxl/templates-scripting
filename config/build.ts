@@ -51,30 +51,43 @@ async function build() {
   const templatesDir = path.resolve("templates");
   const distDir = path.resolve("dist");
   const distTemplatesDir = path.join(distDir, "templates");
-  const files = await fs.readdir(templatesDir);
   const entries: TemplateEntry[] = [];
 
   // Ensure dist directories exist
   await fs.mkdir(distDir, { recursive: true });
   await fs.mkdir(distTemplatesDir, { recursive: true });
 
-  for (const file of files) {
-    if (!file.endsWith(".ts")) continue;
+  // Recursively find all .ts files in templates directory
+  async function findTemplateFiles(dir: string, relativePath: string = ""): Promise<void> {
+    const files = await fs.readdir(dir, { withFileTypes: true });
     
-    const filePath = path.join(templatesDir, file);
-    const metadata = await extractMetadataFromJSDoc(filePath);
-    
-    if (metadata) {
-      entries.push({
-        path: file,
-        metadata
-      });
+    for (const file of files) {
+      const fullPath = path.join(dir, file.name);
+      const relativeFilePath = relativePath ? path.join(relativePath, file.name) : file.name;
+      
+      if (file.isDirectory()) {
+        // Recursively process subdirectories
+        await findTemplateFiles(fullPath, relativeFilePath);
+      } else if (file.name.endsWith(".ts")) {
+        // Process TypeScript files
+        const metadata = await extractMetadataFromJSDoc(fullPath);
+        
+        if (metadata) {
+          entries.push({
+            path: `templates/${relativeFilePath.replace(/\\/g, "/")}`, // Ensure forward slashes and include templates prefix
+            metadata
+          });
 
-      // Copy the .ts file to dist/templates/ for npm publishing
-      const distFilePath = path.join(distTemplatesDir, file);
-      await fs.copyFile(filePath, distFilePath);
+          // Copy the .ts file to dist/templates/ maintaining directory structure
+          const distFilePath = path.join(distTemplatesDir, relativeFilePath);
+          await fs.mkdir(path.dirname(distFilePath), { recursive: true });
+          await fs.copyFile(fullPath, distFilePath);
+        }
+      }
     }
   }
+
+  await findTemplateFiles(templatesDir);
   // Sort entries by summary for consistent ordering
   entries.sort((a, b) => a.metadata.summary.localeCompare(b.metadata.summary));
 
