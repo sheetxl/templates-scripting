@@ -1,6 +1,6 @@
 # Scripting Templates
 
-![SheetXL](./static/img/logo-color-text-135.png)
+![SheetXL](https://www.sheetxl.com/logo-text.svg)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/discord/1141404921246257223)](https://discord.gg/NTKdwUgK9p)

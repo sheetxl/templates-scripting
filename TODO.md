@@ -1,8 +1,6 @@
 # TODO
 
-- ensure deploys
-
-- remove static and just reference main repo
+- https://unpkg.com/@sheetxl/scripting-templates/dist/manifest.json
 
 ## Example # Script Examples # Scripting Examples
 
