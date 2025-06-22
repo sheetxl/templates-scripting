@@ -17,7 +17,7 @@
 
 - Stock. - (rowZero has a nice example)
 - mathjs - https://simple-statistics.github.io/docs/
-- ESM.sh - mport
+- ESM.sh - import
 
 - copy values from one location to another (and transpose or mutate in some way)
 
