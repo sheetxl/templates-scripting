@@ -7,7 +7,7 @@
 
 ## Overview
 
-This repository contains the source templates that appear in the SheetXL script editor's "New Script" dropdown.
+This repository contains the source templates that appear in the SheetXL script editor's "New Script" wizard.
 
 ## Available Templates
 

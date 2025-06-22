@@ -1,6 +1,7 @@
 # TODO
 
-- ensure builds
+- ensure deploys
+
 - remove static and just reference main repo
 
 ## Example # Script Examples # Scripting Examples
