@@ -6,13 +6,13 @@ on:
     paths:
       - 'templates/**'
       - 'package.json'
-      - 'scripts/build.ts'
+      - 'config/build.ts'
   pull_request:
     branches: [main]
     paths:
       - 'templates/**'
       - 'package.json'
-      - 'scripts/build.ts'
+      - 'config/build.ts'
 
 jobs:
   build:
@@ -40,8 +40,8 @@ jobs:
             echo "Error: dist/manifest.json was not generated"
             exit 1
           fi
-          if [ ! -f "templates/directory.json" ]; then
-            echo "Error: templates/directory.json was not generated"
+          if [ ! -d "dist/templates" ]; then
+            echo "Error: dist/templates directory was not generated"
             exit 1
           fi
           echo "✅ Generated files validated"
@@ -49,7 +49,7 @@ jobs:
       - name: Check if templates changed
         id: changes
         run: |
-          git add dist/manifest.json templates/directory.json
+          git add dist/manifest.json
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No changes detected in generated files"
@@ -63,7 +63,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add dist/manifest.json templates/directory.json
+          git add dist/manifest.json
           git commit -m "Auto-update manifest files [skip ci]" || exit 0
           git push
 
