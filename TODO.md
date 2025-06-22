@@ -15,9 +15,9 @@
 
 - A custom function that formats with a b or an m (hmm, this should work based width, custom number format or custom renderer?)
 
-- Stock. (rowZero has a nice example)
-- mathjs https://simple-statistics.github.io/docs/
-- ESM.sh import
+- Stock. - (rowZero has a nice example)
+- mathjs - https://simple-statistics.github.io/docs/
+- ESM.sh - mport
 
 - copy values from one location to another (and transpose or mutate in some way)
 
