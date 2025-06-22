@@ -43,7 +43,8 @@ jobs:
           if [ ! -d "dist/templates" ]; then
             echo "Error: dist/templates directory was not generated"
             exit 1
-          fi          echo "✅ Generated files validated"
+          fi
+          echo "✅ Generated files validated"
 
       - name: Build complete
         run: echo "✅ Build completed successfully"
