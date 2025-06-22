@@ -1,6 +1,6 @@
 {
   "name": "@sheetxl/scripting-templates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Default scripting templates for the SheetXL script editor",
   "main": "dist/manifest.json",
   "files": [
@@ -24,12 +24,15 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sheetxl/scripting-templates.git"
+    "url": "git+https://github.com/sheetxl/scripting-templates.git"
   },
   "bugs": {
     "url": "https://github.com/sheetxl/scripting-templates/issues"
   },
   "homepage": "https://github.com/sheetxl/scripting-templates#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
