@@ -2,7 +2,7 @@
  * Autofill to the end of the sheet.
  *
  * @name Autofill Down
- * @summary Linear fill the current block or end of sheet
+ * @summary Linear fill to the end of the sheet
  * 
  * @remarks
  * * Action on the selected range
