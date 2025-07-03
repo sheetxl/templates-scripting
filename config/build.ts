@@ -3,6 +3,7 @@ import path from "path";
 
 interface TemplateMetadata {
   summary: string;
+  name?: string; // Optional name, can be null if not specified
   icon: "formula" | "macro" | "autostart";
 }
 
@@ -29,7 +30,10 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
   // Extract @summary
   const summaryMatch = jsdocContent.match(/@summary\s+(.+)/);
   const summary = summaryMatch?.[1]?.trim() || "No description available";
-  
+
+  const nameMatch = jsdocContent.match(/@name\s+(.+)/);
+  const name = nameMatch?.[1]?.trim() || null;
+
   // Extract @icon
   const iconMatch = jsdocContent.match(/@icon\s+(formula|macro|autostart)/);
   let icon: "formula" | "macro" | "autostart" = "formula"; // default
@@ -46,11 +50,15 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
       icon = "formula"; // default if no other patterns match
     }
   }
-  
-  return {
+
+  const meta: TemplateMetadata = {
     summary,
     icon
   };
+  if (name) {
+    meta.name = name; // Include name if specified
+  }
+  return meta;
 }
 
 async function build() {
