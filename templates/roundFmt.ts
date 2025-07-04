@@ -5,7 +5,7 @@ import { FormulaContext } from '@sheetxl/primitives';
  *
  * @summary Round and format
  */
-export function roundFmt(num: number, numDigits: number): number {
+export function roundFmt(num: number, numDigits: number=0): number {
   const multiplier = Math.pow(10, Math.abs(numDigits));
   const sign = num > 0 ? 1 : -1;
   if (numDigits > 0) {
