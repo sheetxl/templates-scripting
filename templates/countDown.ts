@@ -1,4 +1,4 @@
-import { Observable, Subscriber } from '@sheetxl/primitive';
+import { Observable, Subscriber } from '@sheetxl/primitives';
 
 /**
  * Example function that streams a countdown to 0 (or another "stop" value).

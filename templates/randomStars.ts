@@ -1,4 +1,4 @@
-import { FormulaContext } from '@sheetxl/primitive';
+import { FormulaContext } from '@sheetxl/primitives';
 
 /**
  * Demonstrates the use of the FormulaContext to mark a results as volatile.

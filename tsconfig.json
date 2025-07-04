@@ -17,7 +17,7 @@
     "config"
   ],
   "exclude": [
-    "templates",
+    "templates", // move to include and reference the @sheetxl/primitive package
     "node_modules",
     "dist"
   ]
