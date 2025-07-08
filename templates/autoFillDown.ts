@@ -9,6 +9,6 @@
  * * extend to next value
  * * select the range
  */
-export function autofillDown(range: SheetXL.ICellRange): void {
-  range.autoFill(range.extend(SheetXL.AxisDirection.Down)).select();
+export function autofillDown(selectedRange: SheetXL.ICellRange): void {
+  selectedRange.autoFill(selectedRange.getExtendedRange(SheetXL.Direction.Down)).select();
 }

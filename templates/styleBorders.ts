@@ -10,9 +10,9 @@
  * * callbacks
  * * IStyle objects
  */
-export function styleBorders(sheet: SheetXL.ISheet): void {
+export function styleBorders(selectedSheet: SheetXL.ISheet): void {
   /** Get hardcoded ranges */
-  const ranges = sheet.getRanges('A1:D4,E5:H8');
+  const ranges = selectedSheet.getRanges('A1:D4,E5:H8');
 
   /** Set the border using shorthand, style color edge */
   // ranges.getStyle().setBorder('double blue');
