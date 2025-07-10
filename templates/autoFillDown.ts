@@ -11,7 +11,8 @@
  */
 export function autofillDown(selectedRange: SheetXL.ICellRange): void {
   selectedRange
-    .autoFill(selectedRange.getExtendedRange(SheetXL.Direction.Down))
-    .getResizeByRange(-1, 0)
+    .autoFill(
+      selectedRange.getExtendedRange(SheetXL.Direction.Down)
+      .getResizeByRange(-1, 0))
     .select();
 }
