@@ -1,6 +1,6 @@
 {
   "name": "@sheetxl/scripting-templates",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Default scripting templates for the SheetXL script editor",
   "main": "dist/manifest.json",
   "files": [
