@@ -3,7 +3,7 @@
  *
  * @summary Random Fill Color
  */
-export function randomColor(ranges: SheetXL.ICellRanges): void {
-  //ranges.getStyle().setFill('accent' + (Math.floor(Math.random() * 6) + 1));
-  ranges.updateStyle({ fill: 'accent' + (Math.floor(Math.random() * 6) + 1) });
+export function randomColor(selected: SheetXL.ICellRanges): void {
+  //selected.getStyle().setFill('accent' + (Math.floor(Math.random() * 6) + 1));
+  selected.updateStyle({ fill: 'accent' + (Math.floor(Math.random() * 6) + 1) });
 }

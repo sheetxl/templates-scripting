@@ -8,9 +8,9 @@
  * * Provides an example on how to move the image to a specific location.
  * * Provides illustration on autoSelect.
  */
-export async function createImage(selectedSheet: SheetXL.ISheet): Promise<void> {
+export async function createImage(selected: SheetXL.ISheet): Promise<void> {
   /* Get the movables collection from the selected sheet */
-  const movables = selectedSheet.getMovables();
+  const movables = selected.getMovables();
   /* Add an image url. Resources can also be added. autoSelect false is the default */
   const image = await movables.addImage('https://www.sheetxl.com/logo-text.svg', { autoSelect: false });
   /* move to 10, 10. Default is current anchor location. */

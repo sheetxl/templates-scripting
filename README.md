@@ -35,7 +35,3 @@ Want to add a new template? See our [Contributing Guide](CONTRIBUTING.md) for de
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-Made with ❤️ by the SheetXL team

@@ -9,10 +9,10 @@
  * * extend to next value
  * * select the range
  */
-export function autofillDown(selectedRange: SheetXL.ICellRange): void {
-  selectedRange
+export function autofillDown(selected: SheetXL.ICellRange): void {
+  selected
     .autoFill(
-      selectedRange.getExtendedRange(SheetXL.Direction.Down)
-      .getResizeByRange(-1, 0))
+      selected.getExtended(SheetXL.Direction.Down)
+      .getResizeBy(-1, 0))
     .select();
 }
