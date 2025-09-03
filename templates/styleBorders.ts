@@ -8,7 +8,7 @@
  * * shorthand strings
  * * json
  * * callbacks
- * * IStyle objects
+ * * IStyle
  */
 export function styleBorders(selected: SheetXL.ISheet): void {
   /** Get hardcoded ranges */
