@@ -29,7 +29,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm config delete always-auth 2>/dev/null || true
+          npm ci
 
       - name: Build manifest
         run: npm run build
@@ -68,7 +70,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm config delete always-auth 2>/dev/null || true
+          npm ci
 
       - name: Build manifest
         run: npm run build
