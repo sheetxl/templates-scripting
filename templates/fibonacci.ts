@@ -16,7 +16,8 @@ export function fibonacci(count: number=10, startAt: number=1, columns: boolean=
   let prev = 0;
   let current = 1;
   result[0]= columns ? current : [current];
-  for (let position=1; position <= startAt + count - 1; position++) {
+  const end = startAt + count - 1;
+  for (let position=1; position <= end; position++) {
     if (position >= startAt) {
       // rows are array of arrays so we give each value it's own array
       result[position - startAt] = columns ? current : [current];
