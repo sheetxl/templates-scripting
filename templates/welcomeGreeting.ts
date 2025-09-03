@@ -40,8 +40,8 @@ export default function main(sheet: SheetXL.ISheet): void {
 
   const range = sheet.getRange('a1');
   // chain the updates
-  range.setValues([[greeting]])
-    .updateStyle({ fill: color })
-    .updateStyle({ font: { size: 20, fill: fontColor } })
-    .autoFit();
+  range.setValues([[greeting]]).getStyle()
+    .update({ fill: color })
+    .update({ font: { size: 20, fill: fontColor } });
+  range.autoFit();
 }

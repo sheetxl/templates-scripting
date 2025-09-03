@@ -10,15 +10,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "moduleResolution": "node"
   },
   "include": [
+    "templates",
+    "node_modules/@sheetxl/sdk/types/scripting.d.ts",
     "config"
   ],
   "exclude": [
-    "templates", // move to include and reference the @sheetxl/primitive package
-    "node_modules",
     "dist"
   ]
 }
