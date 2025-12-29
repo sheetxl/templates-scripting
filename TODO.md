@@ -28,7 +28,9 @@
 - sort a custom way (2x one that modified on startup and another that just does a custom sort)
 - resize rows/columns
 
-- How to adding fading to update via UI
-- Add a highlight on select.
-
 - Show a prompt (Need an ScriptContext similar to FormulaContext)
+
+### Layers
+
+- How to adding fading layer update
+- How to add a highlight on select layer.
