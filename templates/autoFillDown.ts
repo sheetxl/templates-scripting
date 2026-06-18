@@ -12,7 +12,8 @@
 export function autofillDown(selected: SheetXL.ICellRange): void {
   selected
     .autoFill(
-      selected.getExtended(SheetXL.Direction.Down)
-      .getResizeBy(-1, 0))
+      selected.getExtended(SheetXL.Direction.Down) // includes next block
+      .getResizeBy(-1, 0) // adjust
+    )
     .select();
 }

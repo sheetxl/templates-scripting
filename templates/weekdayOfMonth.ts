@@ -7,9 +7,13 @@
  * @param month The month number (1 = January, ..., 12 = December).
  * @param dayOfWeek The target day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday).
  * @param n The occurrence number (1 = 1st, 2 = 2nd, etc.).
- * @returns The calculated date object, or error if the occurrence doesn't exist.
  */
-export function weekdayOfMonth(year: number, month: number, dayOfWeek: number, n: number=1): Date {
+export function weekdayOfMonth(
+  year: number,
+  month: number,
+  dayOfWeek: number,
+  n: number=1
+): Date {
   if (n <= 0 || n > 5) {
     throw new Error("Occurrence 'n' must be between 1 and 5.");
   }
