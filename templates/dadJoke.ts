@@ -1,5 +1,5 @@
 /**
- * @summary Returns Laughter. 😂
+ * Returns Laughter. 😂
  * 
  * @remarks
  * * Uses keyword `async` and returns a Promise to perform a asynchronous operation.

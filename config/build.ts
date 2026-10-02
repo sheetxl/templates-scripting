@@ -27,9 +27,14 @@ async function extractMetadataFromJSDoc(filePath: string): Promise<TemplateMetad
     // If @hidden is present, skip this template
     return null;
   }
-  // Extract @summary
+  // Extract @summary, falling back to the first line of the description
   const summaryMatch = jsdocContent.match(/@summary\s+(.+)/);
-  const summary = summaryMatch?.[1]?.trim() || "No description available";
+  const descriptionLine = jsdocContent
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*\*?\s?/, "").trim())
+    .find((line) => line.length > 0);
+  const firstLine = descriptionLine && !descriptionLine.startsWith("@") ? descriptionLine : undefined;
+  const summary = summaryMatch?.[1]?.trim() || firstLine || "No description available";
 
   const nameMatch = jsdocContent.match(/@name\s+(.+)/);
   const name = nameMatch?.[1]?.trim() || null;

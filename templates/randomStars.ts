@@ -1,9 +1,12 @@
 import { FormulaContext } from '@sheetxl/primitives';
 
 /**
+ * Returns a text string representing a random 1-to-5 star rating
+ * 
+ * @param totalStars The total number of stars to display (default is 5).
+ * 
+ * @remarks
  * Demonstrates the use of the FormulaContext to mark a results as volatile.
- *
- * @summary Returns a text string representing a random 1-to-5 star rating
  */
 export function randomStars(totalStars: number=5): string {
   // --- Mark function as volatile ---

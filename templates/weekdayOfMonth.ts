@@ -1,12 +1,13 @@
 /**
- * This example show returning a date.
- *
- * @summary Calculates the date of the Nth specific weekday of a given month and year.
+ * Calculates the date of the Nth specific weekday of a given month and year.
  *
  * @param year The full year (e.g., 2025).
  * @param month The month number (1 = January, ..., 12 = December).
  * @param dayOfWeek The target day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday).
  * @param n The occurrence number (1 = 1st, 2 = 2nd, etc.).
+ * 
+ * @remarks
+ * This example show returning a date.
  */
 export function weekdayOfMonth(
   year: number,

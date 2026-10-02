@@ -1,9 +1,9 @@
 /**
- * Display a greeting in 'A1' based on the time of day.
- *
- * @summary Welcome Greeting
+ * Welcome Greeting
  *
  * @remarks
+ *  Display a greeting in 'A1' based on the time of day.
+ *
  * * This function is run on load because the function is exported as 'default'.
  * * Only one default function is allowed per script.
  * * The function name is not important but 'main' is the convention.
@@ -47,7 +47,7 @@ export default function main(sheet: SheetXL.ISheet): void {
       fill: color,
       font: {
         size: 20,
-        fill: fontColor
+        color: fontColor
       }
     });
   range.autoFit();

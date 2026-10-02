@@ -1,5 +1,5 @@
 {
-  "name": "@sheetxl/scripting-templates",
+  "name": "@sheetxl/templates-scripting",
   "version": "0.1.23",
   "description": "Default scripting templates for the SheetXL script editor",
   "main": "dist/manifest.json",
@@ -11,6 +11,7 @@
     "build": "ts-node config/build.ts",
     "prebuild": "npm run clean",
     "clean": "ts-node config/clean.ts",
+    "typecheck": "tsc -p .",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -24,22 +25,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sheetxl/scripting-templates.git"
+    "url": "git+https://github.com/sheetxl/templates-scripting.git"
   },
   "bugs": {
-    "url": "https://github.com/sheetxl/scripting-templates/issues"
+    "url": "https://github.com/sheetxl/templates-scripting/issues"
   },
-  "homepage": "https://github.com/sheetxl/scripting-templates#readme",
+  "homepage": "https://github.com/sheetxl/templates-scripting#readme",
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "@sheetxl/primitives": "beta",
+    "@sheetxl/sdk": "beta",
     "@types/node": "^24.3.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@sheetxl/primitives": "*",
-    "@sheetxl/sdk": "*"
   }
 }

@@ -1,15 +1,17 @@
 import { Observable, Subscriber } from '@sheetxl/primitives';
 
 /**
- * Example function that streams a countdown to 0 (or another "stop" value).
- * In this example the spreadsheet will return a new value every `wait` milliseconds.
+ * Count down from a start value to a stop value.
  * 
- * @summary Count down from a start value to a stop value.
  * @param start The first step
  * @param stop The last step
  * @param step The decrement step
  * @param wait The wait time in milliseconds between steps
  * @hidden Observable and realtime not yet completed.
+ * 
+ * @remarks
+ * Example function that streams a countdown to 0 (or another "stop" value).
+ * In this example the spreadsheet will return a new value every `wait` milliseconds.
  */
 export function countDown(
   start: number,

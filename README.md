@@ -28,6 +28,24 @@ For additional examples and patterns, check out the **[Built-in Formulas](https:
 
 Templates added to this repo automatically available in the SheetXL script editor. No manual installation required.
 
+## Publishing
+
+There are two channels, one per branch. Each is type-checked against the SheetXL release on the same
+npm dist-tag, since that is the script editor that loads it.
+
+| branch | version | npm dist-tag | read by |
+| --- | --- | --- | --- |
+| `main` | `X.Y.Z` | `latest` | stable SheetXL |
+| `beta` | `X.Y.Z-beta.N` | `beta` | SheetXL beta |
+
+A push to either branch that changes `templates/` or `config/` type-checks the templates, builds the
+manifest, bumps the version, publishes to npm, tags it and creates a GitHub release. Merging `beta`
+into `main` promotes it: the next `main` publish drops the `-beta.N` suffix. To publish without a
+template change, run the workflow from the Actions tab (**Run workflow**), or put `[publish]` in the
+commit message.
+
+To check locally: `npm run typecheck && npm run build`.
+
 ## Contributing
 
 Want to add a new template? See our [Contributing Guide](CONTRIBUTING.md) for detailed instructions.

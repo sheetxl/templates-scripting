@@ -1,35 +1,59 @@
 name: Build and Publish Templates
 
+# `main` publishes the stable channel (npm dist-tag `latest`); `beta` publishes prereleases
+# (`X.Y.Z-beta.N`, dist-tag `beta`). Each channel is type-checked against the SheetXL release on the
+# same dist-tag, because that is the script editor that will load it.
 on:
   push:
-    branches: [main]
+    branches: [main, beta]
     paths:
       - 'templates/**'
+      - 'config/**'
       - 'package.json'
-      - 'config/build.ts'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - '.github/workflows/publish.yml'
   pull_request:
-    branches: [main]
+    branches: [main, beta]
     paths:
       - 'templates/**'
+      - 'config/**'
       - 'package.json'
-      - 'config/build.ts'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - '.github/workflows/publish.yml'
+  # Actions tab > Run workflow: publishes a new version even without template changes.
+  workflow_dispatch:
+
+env:
+  # A pull request is checked against the channel of the branch it targets.
+  CHANNEL: ${{ (github.base_ref || github.ref_name) == 'beta' && 'beta' || 'latest' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
+
+      # --no-save leaves package.json and the lockfile as committed.
+      - name: Install SheetXL for this channel
+        run: |
+          npm install --no-save "@sheetxl/sdk@$CHANNEL" "@sheetxl/primitives@$CHANNEL"
+          npm ls @sheetxl/sdk @sheetxl/primitives
+
+      - name: Type-check templates
+        run: npm run typecheck
 
       - name: Build manifest
         run: npm run build
@@ -40,29 +64,36 @@ jobs:
             echo "Error: dist/manifest.json was not generated"
             exit 1
           fi
-          if [ ! -d "dist/templates" ]; then
-            echo "Error: dist/templates directory was not generated"
-            exit 1
-          fi
-          echo "✅ Generated files validated"
-
-      - name: Build complete
-        run: echo "✅ Build completed successfully"
+          node -e '
+            const fs = require("fs");
+            const entries = JSON.parse(fs.readFileSync("dist/manifest.json", "utf-8"));
+            if (!Array.isArray(entries) || entries.length === 0) throw new Error("manifest has no entries");
+            for (const e of entries) {
+              if (!fs.existsSync("dist/" + e.path)) throw new Error("missing file " + e.path);
+            }
+            console.log("Manifest has " + entries.length + " templates");
+          '
+          echo "Generated files validated"
 
   publish:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/beta')
     needs: build
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
+      # npm trusted publishing (OIDC); no npm token secret.
+      id-token: write
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          # Fetch the latest commit (including the manifest update from build job)
-          ref: main
+          ref: ${{ github.ref_name }}
+          # Full history and tags, so the change check can diff against the last release.
+          fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
@@ -79,75 +110,81 @@ jobs:
 
       - name: Check if version should be bumped
         id: version_check
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          # Check if there are template changes since last release
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "Last tag: $LAST_TAG"
-            # Check for force publish flag in commit message
-          if [[ "${{ github.event.head_commit.message }}" == *"[publish]"* ]]; then
+          CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "Last tag: ${LAST_TAG:-<none>}"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual publish requested"
+            SHOULD_PUBLISH=true
+          elif [[ "$COMMIT_MESSAGE" == *"[publish]"* ]]; then
             echo "Force publish requested in commit message"
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-          # Check for changes in templates since last tag
-          elif ! git diff --quiet $LAST_TAG HEAD -- templates/; then
-            echo "Template changes detected since last release"
-            echo "should_publish=true" >> $GITHUB_OUTPUT
+            SHOULD_PUBLISH=true
+          elif [[ -z "$LAST_TAG" ]] || ! git diff --quiet "$LAST_TAG" HEAD -- templates/ config/; then
+            echo "Template changes detected since ${LAST_TAG:-the first commit}"
+            SHOULD_PUBLISH=true
           else
-            echo "No template changes since last release"
-            echo "should_publish=false" >> $GITHUB_OUTPUT
+            echo "No template changes since $LAST_TAG"
+            SHOULD_PUBLISH=false
           fi
-          
-          # Get the should_publish value we just set
-          SHOULD_PUBLISH=$(grep "should_publish=" $GITHUB_OUTPUT | cut -d= -f2)
-          
-          if [[ "$SHOULD_PUBLISH" == "true" ]]; then
-            # Auto-increment patch version
-            CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
-            NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-            echo "Bumping version from $CURRENT_VERSION to $NEW_VERSION"
-          fi
+          echo "should_publish=$SHOULD_PUBLISH" >> $GITHUB_OUTPUT
 
+      # beta: 0.1.23 -> 0.1.24-beta.0 -> 0.1.24-beta.1. main: 0.1.23 -> 0.1.24, and a prerelease
+      # merged in from beta (0.1.24-beta.3) -> 0.1.24.
+      # The version is written locally, published, and only then committed and tagged, so a failed
+      # publish leaves no tag behind and the next run retries the same version.
       - name: Update version
+        id: new_version
         if: steps.version_check.outputs.should_publish == 'true'
         run: |
-          npm version ${{ steps.version_check.outputs.new_version }} --no-git-tag-version
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add package.json
-          git commit -m "Bump version to ${{ steps.version_check.outputs.new_version }} [skip ci]"
-          git push
+          if [[ "$CHANNEL" == "beta" ]]; then
+            npm version prerelease --preid=beta --no-git-tag-version
+          else
+            npm version patch --no-git-tag-version
+          fi
+          VERSION=$(npm pkg get version | tr -d '"')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Bumping version from ${{ steps.current_version.outputs.version }} to $VERSION ($CHANNEL)"
 
-      - name: Create release tag
-        if: steps.version_check.outputs.should_publish == 'true'
-        run: |
-          git tag "v${{ steps.version_check.outputs.new_version }}"
-          git push origin "v${{ steps.version_check.outputs.new_version }}"
-
+      # --tag is always explicit: npm assigns `latest` to any publish without one, prerelease or not.
       - name: Publish to npm
         if: steps.version_check.outputs.should_publish == 'true'
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --tag "$CHANNEL"
+
+      - name: Commit version and tag release
+        if: steps.version_check.outputs.should_publish == 'true'
+        run: |
+          VERSION="${{ steps.new_version.outputs.version }}"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add package.json package-lock.json
+          git commit -m "Bump version to $VERSION [skip ci]"
+          git push
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
 
       - name: Create GitHub Release
         if: steps.version_check.outputs.should_publish == 'true'
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.version_check.outputs.new_version }}
-          release_name: Release v${{ steps.version_check.outputs.new_version }}
-          body: |
-            ## 🚀 New Template Release
-            
-            This release includes updated SheetXL scripting templates.
-            
-            ### 📦 Installation
-            ```bash
-            npm install @sheetxl/scripting-templates@${{ steps.version_check.outputs.new_version }}
-            ```
-            
-            ### 🔄 Changes
-            See the [commit history](https://github.com/sheetxl/scripting-templates/commits/v${{ steps.version_check.outputs.new_version }}) for details.
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.new_version.outputs.version }}"
+          if [[ "$CHANNEL" == "beta" ]]; then
+            RELEASE_FLAGS="--prerelease --latest=false"
+          else
+            RELEASE_FLAGS="--latest"
+          fi
+          gh release create "v$VERSION" $RELEASE_FLAGS \
+            --title "Release v$VERSION" \
+            --notes "Updated SheetXL scripting templates.
+
+          Manifest: https://unpkg.com/@sheetxl/templates-scripting@$VERSION/dist/manifest.json
+
+          \`\`\`bash
+          npm install @sheetxl/templates-scripting@$VERSION
+          \`\`\`
+
+          See the [commit history](https://github.com/sheetxl/templates-scripting/commits/v$VERSION) for details."

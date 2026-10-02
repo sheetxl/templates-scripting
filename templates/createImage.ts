@@ -1,7 +1,5 @@
 /**
- * Add a movable image and move it to the top left.
- *
- * @summary Create Image
+ * Insert Image
  *  
  * @remarks
  * * Demonstrates how to add an image to the current sheet and move it to the top left.
@@ -12,11 +10,9 @@ export async function createImage(selected: SheetXL.ISheet): Promise<void> {
   /* Get the movables collection from the selected sheet */
   const movables = selected.getMovables();
   /* Add an image url. Resources can also be added. autoSelect false is the default */
-  const image = await movables.addImage('https://www.sheetxl.com/logo-text.svg', { autoSelect: false });
+  const image = await movables.addPicture('https://www.sheetxl.com/logo-text.svg', { autoSelect: false });
   /* move to 10, 10. Default is current anchor location. */
   image.setBounds({ x: 10, y: 10 });
-  /* scroll into view. Not needed if autoSelect is true */
-  await image.scrollIntoView();
-  /* Select. not needed if auto select is true. */
-  // image.select();
+  /* Select and scroll into view. Not needed if autoSelect is true */
+  await image.select({ scrollIntoView: true });
 }

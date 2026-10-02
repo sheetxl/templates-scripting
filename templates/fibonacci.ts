@@ -1,15 +1,21 @@
 /**
- * Example to show:
- * - Return either a single array for column or an array of arrays for rows.
- * - Documentation for the function.
- *
- * @summary Generate the Fibonacci sequence.
+ * Generate the Fibonacci sequence.
  * 
  * @param count The number of Fibonacci numbers to generate.
  * @param startAt The starting position in the sequence.
  * @param columns If true will return columns instead of rows.
+ * 
+ * @remarks
+ * Example to show:
+ * - Return either a single array for column or an array of arrays for rows.
+ * - Documentation for the function.
+ *
  */
-export function fibonacci(count: number=10, startAt: number=1, columns: boolean=false): number[][] {
+export function fibonacci(
+  count: number=10,
+  startAt: number=1,
+  columns: boolean=false
+): number[][] {
   if (count <= 0) throw new Error('Count must be greater than 0.');
   const result = new Array(count);
 

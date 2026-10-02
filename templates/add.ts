@@ -1,9 +1,10 @@
 /**
- * Illustration of a simple function that adds two numbers.
- *
- * @summary Adds two numbers.
+ * Adds two numbers.
  * @param number1 The first number to add.
  * @param number2 The second number to add.
+ * 
+ * @remarks
+ * Illustration of a simple function that adds two numbers.
  */
 export function addTwo(number1: number, number2: number): number {
   return number1 + number2;

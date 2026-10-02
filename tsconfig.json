@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "moduleResolution": "node10"
+    }
   },
   "include": [
     "templates",

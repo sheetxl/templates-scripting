@@ -1,11 +1,13 @@
 import { FormulaContext } from '@sheetxl/primitives';
 
 /**
- * Demonstrates the use of the FormulaContext to format a result.
- *
- * @summary Round and format
+ * Round and format
+ * 
  * @param num The number to round and format.
  * @param numDigits The number of digits to round to.
+ * 
+ * @remarks
+ * Demonstrates the use of the FormulaContext to format a result.
  */
 export function roundFmt(num: number, numDigits: number=0): number {
   const multiplier = Math.pow(10, Math.abs(numDigits));
