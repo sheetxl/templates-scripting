@@ -55,23 +55,33 @@ jobs:
       - name: Type-check templates
         run: npm run typecheck
 
-      - name: Build manifest
+      - name: Build catalog
         run: npm run build
 
       - name: Validate generated files
         run: |
-          if [ ! -f "dist/manifest.json" ]; then
-            echo "Error: dist/manifest.json was not generated"
-            exit 1
-          fi
+          for f in dist/contents.json dist/templates-scripting/contents.json dist/manifest.json; do
+            if [ ! -f "$f" ]; then
+              echo "Error: $f was not generated"
+              exit 1
+            fi
+          done
           node -e '
             const fs = require("fs");
-            const entries = JSON.parse(fs.readFileSync("dist/manifest.json", "utf-8"));
-            if (!Array.isArray(entries) || entries.length === 0) throw new Error("manifest has no entries");
-            for (const e of entries) {
-              if (!fs.existsSync("dist/" + e.path)) throw new Error("missing file " + e.path);
+            const catalog = JSON.parse(fs.readFileSync("dist/templates-scripting/contents.json", "utf-8"));
+            const root = JSON.parse(fs.readFileSync("dist/contents.json", "utf-8"));
+            if (catalog.kind !== "templates" || catalog.package !== "templates-scripting") throw new Error("catalog header is wrong");
+            if (!Array.isArray(catalog.entries) || catalog.entries.length === 0) throw new Error("catalog has no entries");
+            const listed = new Set(root.entries.map((e) => e.path));
+            for (const e of catalog.entries) {
+              if (!fs.existsSync("dist/templates-scripting/" + e.path)) throw new Error("missing file " + e.path);
+              if (!listed.has("templates-scripting/" + e.path)) throw new Error("root listing is missing " + e.path);
             }
-            console.log("Manifest has " + entries.length + " templates");
+            const legacy = JSON.parse(fs.readFileSync("dist/manifest.json", "utf-8"));
+            for (const e of legacy) {
+              if (!fs.existsSync("dist/" + e.path)) throw new Error("missing legacy file " + e.path);
+            }
+            console.log("Catalog has " + catalog.entries.length + " templates");
           '
           echo "Generated files validated"
 
@@ -101,7 +111,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build manifest
+      - name: Build catalog
         run: npm run build
 
       - name: Get current version
@@ -181,7 +191,7 @@ jobs:
             --title "Release v$VERSION" \
             --notes "Updated SheetXL scripting templates.
 
-          Manifest: https://unpkg.com/@sheetxl/templates-scripting@$VERSION/dist/manifest.json
+          Catalog: https://unpkg.com/@sheetxl/templates-scripting@$VERSION/dist/templates-scripting/contents.json
 
           \`\`\`bash
           npm install @sheetxl/templates-scripting@$VERSION

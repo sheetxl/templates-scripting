@@ -16,14 +16,16 @@ Thank you for your interest in contributing to the SheetXL scripting templates! 
 Create a new `.ts` file in the `templates/` directory:
 
 ```text
-scripts/
-├── build-manifest.ts (generates metadata)
-├── clean.js (cleanup utility)
+config/
+├── build.ts (reads the templates, writes dist/)
+├── clean.ts
 templates/
 ├── myNewTemplate.ts
-├── directory.json (auto-generated, for development)
-dist/
-└── manifest.json (auto-generated, for npm package)
+dist/ (generated)
+├── contents.json (listing of every file)
+└── templates-scripting/
+    ├── contents.json (the catalog the script editor reads)
+    └── myNewTemplate.ts
 ```
 
 ### Template Format
@@ -33,7 +35,7 @@ dist/
  * Brief description of what your template does.
  * This appears in the template description.
  *
- * @summary Display Name for Template Picker
+ * @summary One line shown under the title
  * @icon formula
  * @param param1 Description of first parameter
  * @param param2 Description of second parameter  
@@ -47,11 +49,17 @@ export function myTemplate(param1: string, param2: number): boolean {
 
 ### Metadata Guidelines
 
-- **@summary**: Keep it concise (2-4 words). This becomes the template title
-- **@icon**: Specify the icon type: `formula`, `macro`, or `autostart`
-  - `formula`: Pure calculation functions (default if not specified)
+The first JSDoc block in the file describes the template.
+
+- **@name**: Optional title. Defaults to the file name, title-cased (`autoFillDown.ts` is "Auto Fill
+  Down"); a formula's is upper-cased, as the function is called (`add.ts` is "ADD")
+- **@summary**: One line shown under the title. Defaults to the first line of the description
+- **@icon**: Specify the icon type: `formula`, `macro`, or `autostart`. Detected when not specified
+  - `formula`: Pure calculation functions
   - `macro`: Sheet/range manipulation, styling, UI operations  
   - `autostart`: Functions with `export default` (run on workbook open)
+- **@hidden**: Leaves the template out of the catalog, optionally with a reason
+  (`@hidden Not finished yet.`)
 - **Description**: First line should be clear and descriptive
 - **Parameters**: Document all parameters with types and descriptions
 
@@ -80,12 +88,11 @@ Look at existing templates for inspiration:
 # Install dependencies
 npm install
 
-# Build manifest to test metadata extraction
+# Build the catalog; a template with a problem fails the build
 npm run build
 
-# Verify your template appears in the generated files
-cat dist/manifest.json | grep "yourTemplate"
-cat templates/directory.json | grep "yourTemplate"
+# Verify your template appears in the catalog
+cat dist/templates-scripting/contents.json | grep "yourTemplate"
 ```
 
 ### Validation Checklist
@@ -94,7 +101,7 @@ cat templates/directory.json | grep "yourTemplate"
 - [ ] JSDoc metadata is properly formatted
 - [ ] Function has appropriate parameter types and defaults
 - [ ] Code includes error handling for edge cases
-- [ ] Template appears correctly in generated `directory.json`
+- [ ] Template appears correctly in the generated `dist/templates-scripting/contents.json`
 
 ## 📋 Pull Request Process
 

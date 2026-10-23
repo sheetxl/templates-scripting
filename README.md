@@ -39,7 +39,7 @@ npm dist-tag, since that is the script editor that loads it.
 | `beta` | `X.Y.Z-beta.N` | `beta` | SheetXL beta |
 
 A push to either branch that changes `templates/` or `config/` type-checks the templates, builds the
-manifest, bumps the version, publishes to npm, tags it and creates a GitHub release. Merging `beta`
+catalog, bumps the version, publishes to npm, tags it and creates a GitHub release. Merging `beta`
 into `main` promotes it: the next `main` publish drops the `-beta.N` suffix. To publish without a
 template change, run the workflow from the Actions tab (**Run workflow**), or put `[publish]` in the
 commit message.
