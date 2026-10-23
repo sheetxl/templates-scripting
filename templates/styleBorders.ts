@@ -8,7 +8,7 @@
  * * callbacks
  * * IStyle
  */
-export function styleBorders(selected: SheetXL.ISheet): void {
+export function styleBorders(selected: SheetXL.IWorksheet): void {
   /** Get hardcoded ranges */
   const ranges = selected.getRanges('A1:D4,E5:H8');
 

@@ -8,7 +8,7 @@
  * * Only one default function is allowed per script.
  * * The function name is not important but 'main' is the convention.
  */
-export default function main(sheet: SheetXL.ISheet): void {
+export default function main(sheet: SheetXL.IWorksheet): void {
   const now = new Date();
   const hours = now.getHours();
   let greeting = '';

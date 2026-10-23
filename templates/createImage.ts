@@ -6,7 +6,7 @@
  * * Provides an example on how to move the image to a specific location.
  * * Provides illustration on autoSelect.
  */
-export async function createImage(selected: SheetXL.ISheet): Promise<void> {
+export async function createImage(selected: SheetXL.IWorksheet): Promise<void> {
   /* Get the movables collection from the selected sheet */
   const movables = selected.getMovables();
   /* Add an image url. Resources can also be added. autoSelect false is the default */
