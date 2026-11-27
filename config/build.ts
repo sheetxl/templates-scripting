@@ -1,20 +1,24 @@
 /**
  * Reads every template under `templates/` and writes the catalog `dist/` that unpkg serves.
  *
- *   templates/<name>.ts   a template; its metadata comes from the first JSDoc block:
- *                           @name     the title (default: the file name, title-cased; a formula's is upper-cased)
- *                           @summary  the line under the title (default: the first line of the description)
- *                           @icon     formula | macro | autostart (default: detected from the source)
- *                           @hidden   leave the template out, optionally with a reason
+ *   templates/<name>.<ext>   a template, in the language its extension names (LANGUAGES below);
+ *                            its metadata comes from the file's first doc block (a JSDoc block, a
+ *                            docstring):
+ *                              @name     the title (default: the file name, title-cased; a formula's is upper-cased)
+ *                              @summary  the line under the title (default: the first line of the description)
+ *                              @icon     formula | macro | autostart (default: detected from the source)
+ *                              @hidden   leave the template out, optionally with a reason
  *
  * Output:
  *
  *   dist/contents.json                         root listing of every file and folder
  *   dist/templates-scripting/contents.json     the catalog
- *   dist/templates-scripting/<name>.ts
+ *   dist/templates-scripting/<name>.<ext>
  *
  *   dist/manifest.json, dist/templates/<name>.ts   the previous layout, for script editors released
- *                                                  before the catalog. Remove once those are retired.
+ *                                                  before the catalog, TypeScript only (they read
+ *                                                  every template as TypeScript). Remove once those
+ *                                                  are retired.
  *
  * Any problem fails the build.
  */
@@ -27,6 +31,17 @@ const SCHEMA = 1;
 type Icon = "formula" | "macro" | "autostart";
 const ICONS: Icon[] = ["formula", "macro", "autostart"];
 
+/**
+ * The languages a template can be written in, by file extension: the name the script editor knows
+ * the language by, and the template's doc block. The first language is the one a catalog entry
+ * without a language is read as.
+ */
+const LANGUAGES: Record<string, { language: string; docBlock: RegExp }> = {
+  ".ts": { language: "typescript", docBlock: /\/\*\*([\s\S]*?)\*\// },
+  ".py": { language: "python", docBlock: /"""([\s\S]*?)"""/ },
+};
+const LEGACY_LANGUAGE = Object.values(LANGUAGES)[0].language;
+
 const SRC = path.resolve("templates");
 const DIST = path.resolve("dist");
 const OUT = path.join(DIST, PACKAGE);
@@ -37,6 +52,7 @@ interface Entry {
   title: string;
   summary: string;
   icon: Icon;
+  language: string;
 }
 
 const problems: string[] = [];
@@ -56,9 +72,11 @@ function toTitle(base: string, icon: Icon): string {
 /** The catalog entry for a template, or `null` when it is `@hidden`. */
 async function readTemplate(file: string, relPath: string): Promise<Entry | null> {
   const content = await fs.readFile(file, "utf-8");
-  const jsdoc = content.match(/\/\*\*([\s\S]*?)\*\//)?.[1];
+  const extension = path.extname(relPath);
+  const { language, docBlock } = LANGUAGES[extension];
+  const jsdoc = content.match(docBlock)?.[1];
   if (!jsdoc) {
-    problems.push(`templates/${relPath}: no JSDoc block; the first one describes the template`);
+    problems.push(`templates/${relPath}: no doc block; the first one describes the template`);
     return null;
   }
   if (/@hidden\b/.test(jsdoc)) return null;
@@ -84,8 +102,8 @@ async function readTemplate(file: string, relPath: string): Promise<Entry | null
     icon = "formula";
   }
 
-  const base = path.basename(relPath, ".ts");
-  return { path: relPath, title: tag("name") ?? toTitle(base, icon), summary: summary ?? "", icon };
+  const base = path.basename(relPath, extension);
+  return { path: relPath, title: tag("name") ?? toTitle(base, icon), summary: summary ?? "", icon, language };
 }
 
 async function findTemplates(dir: string, rel = ""): Promise<{ file: string; relPath: string }[]> {
@@ -95,7 +113,7 @@ async function findTemplates(dir: string, rel = ""): Promise<{ file: string; rel
     const file = path.join(dir, d.name);
     const relPath = rel ? `${rel}/${d.name}` : d.name;
     if (d.isDirectory()) found.push(...await findTemplates(file, relPath));
-    else if (d.name.endsWith(".ts")) found.push({ file, relPath });
+    else if (Object.hasOwn(LANGUAGES, path.extname(d.name))) found.push({ file, relPath });
   }
   return found;
 }
@@ -109,7 +127,7 @@ async function build(): Promise<void> {
       console.log(`SKIP  ${relPath}`);
       continue;
     }
-    console.log(`  ok  ${relPath}  ${entry.icon}  ${entry.title}`);
+    console.log(`  ok  ${relPath}  ${entry.language}  ${entry.icon}  ${entry.title}`);
     entries.push(entry);
     sources.set(relPath, file);
   }
@@ -124,10 +142,13 @@ async function build(): Promise<void> {
     process.exit(1);
   }
 
-  entries.sort((a, b) => a.title.localeCompare(b.title));
+  // One template written in several languages is listed once per language, in the order of LANGUAGES.
+  const languageOrder = Object.values(LANGUAGES).map(({ language }) => language);
+  entries.sort((a, b) => a.title.localeCompare(b.title) || languageOrder.indexOf(a.language) - languageOrder.indexOf(b.language));
 
-  for (const { path: relPath } of entries) {
-    for (const out of [OUT, LEGACY_OUT]) {
+  const legacyEntries = entries.filter((entry) => entry.language === LEGACY_LANGUAGE);
+  for (const { path: relPath, language } of entries) {
+    for (const out of language === LEGACY_LANGUAGE ? [OUT, LEGACY_OUT] : [OUT]) {
       const to = path.join(out, relPath);
       await fs.mkdir(path.dirname(to), { recursive: true });
       await fs.copyFile(sources.get(relPath)!, to);
@@ -137,7 +158,7 @@ async function build(): Promise<void> {
   const catalog = { kind: "templates", package: PACKAGE, meta: { schema: SCHEMA }, entries };
   await fs.writeFile(path.join(OUT, "contents.json"), JSON.stringify(catalog, null, 2) + "\n");
 
-  const legacy = entries.map(({ path: relPath, title, summary, icon }) => ({
+  const legacy = legacyEntries.map(({ path: relPath, title, summary, icon }) => ({
     path: `templates/${relPath}`,
     metadata: { title, summary, icon },
   }));

@@ -11,7 +11,11 @@ This repository contains the source templates that appear in the SheetXL script 
 
 ## Available Templates
 
-Browse the [`templates/`](./templates/) directory to see all available templates:
+Browse the [`templates/`](./templates/) directory to see all available templates. A template is
+written in TypeScript (`.ts`) or Python (`.py`); the file's extension is its language, and the
+script editor puts it in a module of that language. The worksheet functions (`add`, `fibonacci`,
+`roundFmt`, `weekdayOfMonth`) are written in both, with the same names and the same answers.
+Templates that drive the workbook (macros) are TypeScript.
 
 ### 🧮 Built-in Formulas
 
@@ -44,7 +48,9 @@ into `main` promotes it: the next `main` publish drops the `-beta.N` suffix. To 
 template change, run the workflow from the Actions tab (**Run workflow**), or put `[publish]` in the
 commit message.
 
-To check locally: `npm run typecheck && npm run build`.
+To check locally: `npm run typecheck && npm run build`. The type check covers the TypeScript
+templates; a Python template is checked when the script editor (or the SheetXL test that reads this
+folder) compiles it.
 
 ## Contributing
 

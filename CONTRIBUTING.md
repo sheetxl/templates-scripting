@@ -13,7 +13,10 @@ Thank you for your interest in contributing to the SheetXL scripting templates! 
 
 ### File Structure
 
-Create a new `.ts` file in the `templates/` directory:
+Create a new file in the `templates/` directory: `.ts` for TypeScript, `.py` for Python. The
+extension is the template's language; the catalog records it, and the script editor puts the
+template in a module of that language. A worksheet function can be written in both languages under
+one name (`fibonacci.ts`, `fibonacci.py`); keep the two giving the same answers.
 
 ```text
 config/
@@ -21,14 +24,16 @@ config/
 ├── clean.ts
 templates/
 ├── myNewTemplate.ts
+├── myNewTemplate.py
 dist/ (generated)
 ├── contents.json (listing of every file)
 └── templates-scripting/
     ├── contents.json (the catalog the script editor reads)
-    └── myNewTemplate.ts
+    ├── myNewTemplate.ts
+    └── myNewTemplate.py
 ```
 
-### Template Format
+### Template Format (TypeScript)
 
 ```typescript
 /**
@@ -47,9 +52,29 @@ export function myTemplate(param1: string, param2: number): boolean {
 }
 ```
 
+### Template Format (Python)
+
+```python
+def myTemplate(param1: str, param2: float = 1.0) -> bool:
+    """Brief description of what your template does.
+
+    This appears in the template description.
+
+    Args:
+        param1: Description of first parameter.
+        param2: Description of second parameter.
+    """
+    return True
+```
+
+Every parameter and the return have a type hint (`float`, `int`, `str`, `bool`, `date`, `Any`,
+`list[list[float]]` for a range, and the like); a function without them does not compile. The
+summary and the `Args:` section (Google style) are what the function shows in a cell.
+
 ### Metadata Guidelines
 
-The first JSDoc block in the file describes the template.
+The first doc block in the file describes the template: the first JSDoc block of a TypeScript
+template, the first docstring of a Python one. The tags below go in that block.
 
 - **@name**: Optional title. Defaults to the file name, title-cased (`autoFillDown.ts` is "Auto Fill
   Down"); a formula's is upper-cased, as the function is called (`add.ts` is "ADD")
@@ -65,7 +90,7 @@ The first JSDoc block in the file describes the template.
 
 ### Code Standards
 
-- Use TypeScript with strict typing
+- Type everything: strict TypeScript, or Python type hints on every parameter and return
 - Include comprehensive error handling
 - Add inline comments for complex logic
 - Follow existing naming conventions
@@ -79,6 +104,8 @@ Look at existing templates for inspiration:
 - `welcomeGreeting.ts` - Default export function with conditional logic
 - `styleBorders.ts` - Sheet manipulation and styling
 - `dadJoke.ts` - External API integration
+- `fibonacci.py`, `weekdayOfMonth.py`, `add.py` - The Python forms of the worksheet functions: a
+  spilled result, a date, a range
 
 ## 🧪 Testing Your Template
 
@@ -97,7 +124,8 @@ cat dist/templates-scripting/contents.json | grep "yourTemplate"
 
 ### Validation Checklist
 
-- [ ] Template compiles without TypeScript errors
+- [ ] Template compiles without errors (`npm run typecheck` for TypeScript; for Python, open it in
+      the script editor and save, or run SheetXL's `scriptTemplates.node.test.ts`)
 - [ ] JSDoc metadata is properly formatted
 - [ ] Function has appropriate parameter types and defaults
 - [ ] Code includes error handling for edge cases
