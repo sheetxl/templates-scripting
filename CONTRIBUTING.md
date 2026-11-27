@@ -71,6 +71,18 @@ Every parameter and the return have a type hint (`float`, `int`, `str`, `bool`, 
 `list[list[float]]` for a range, and the like); a function without them does not compile. The
 summary and the `Args:` section (Google style) are what the function shows in a cell.
 
+A Python function reaches the formula context as a TypeScript one does, under the same names:
+`from sheetxl import FormulaContext`, then `FormulaContext.formatResults('0.00')`,
+`FormulaContext.getRow()` and the like (`roundFmt.py`, `weekdayOfMonth.py`). Members that read other
+cells of the workbook (`getValueAt`, `getReference`) are not available to Python yet.
+
+A Python template can import numpy and pandas, besides Python's standard library; nothing else.
+A parameter hinted `pd.DataFrame` receives the range as a DataFrame whose column names are its
+first row, and a returned DataFrame spills its headers and values (not its index); `np.ndarray`
+receives the range as a 2-D array, and a returned array spills (`groupTotals.py`, `trendLine.py`).
+Such a template is Python only: it has no TypeScript form. Say in its description that the library
+loads the first time the function is used.
+
 ### Metadata Guidelines
 
 The first doc block in the file describes the template: the first JSDoc block of a TypeScript
@@ -104,8 +116,10 @@ Look at existing templates for inspiration:
 - `welcomeGreeting.ts` - Default export function with conditional logic
 - `styleBorders.ts` - Sheet manipulation and styling
 - `dadJoke.ts` - External API integration
-- `fibonacci.py`, `weekdayOfMonth.py`, `add.py` - The Python forms of the worksheet functions: a
-  spilled result, a date, a range
+- `fibonacci.py`, `weekdayOfMonth.py`, `add.py`, `roundFmt.py` - The Python forms of the worksheet
+  functions: a spilled result, a date with its format, a range, a number format
+- `groupTotals.py`, `trendLine.py` - Python only: a table in and out with pandas, array math with
+  numpy
 
 ## 🧪 Testing Your Template
 

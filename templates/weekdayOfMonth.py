@@ -1,10 +1,12 @@
 from datetime import date, timedelta
 
+from sheetxl import FormulaContext
+
 
 def weekdayOfMonth(year: int, month: int, dayOfWeek: int, n: int = 1) -> date:
     """Calculates the date of the Nth specific weekday of a given month and year.
 
-    This example shows returning a date.
+    This example shows returning a date, and giving it a date format through the FormulaContext.
 
     Args:
         year: The full year (e.g., 2025).
@@ -24,4 +26,7 @@ def weekdayOfMonth(year: int, month: int, dayOfWeek: int, n: int = 1) -> date:
 
     if result.month != month:
         raise ValueError("That occurrence doesn't exist in this month")
+
+    # Shows the weekday with the date, so the answer can be checked at a glance.
+    FormulaContext.formatResults('dddd, mmmm d, yyyy')
     return result

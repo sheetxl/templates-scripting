@@ -1,3 +1,5 @@
+import { FormulaContext } from '@sheetxl/primitives';
+
 /**
  * Calculates the date of the Nth specific weekday of a given month and year.
  *
@@ -7,7 +9,7 @@
  * @param n The occurrence number (1 = 1st, 2 = 2nd, etc.).
  * 
  * @remarks
- * This example show returning a date.
+ * This example shows returning a date, and giving it a date format through the FormulaContext.
  */
 export function weekdayOfMonth(
   year: number,
@@ -50,6 +52,9 @@ export function weekdayOfMonth(
 
   // Clear time components for a clean date comparison if needed elsewhere
   resultDate.setHours(0, 0, 0, 0);
+
+  // Shows the weekday with the date, so the answer can be checked at a glance.
+  FormulaContext.formatResults('dddd, mmmm d, yyyy');
 
   return resultDate;
 }
